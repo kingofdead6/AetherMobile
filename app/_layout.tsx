@@ -11,15 +11,13 @@ export default function RootLayout() {
   const [isAppReady, setIsAppReady] = useState(false);
 
   useEffect(() => {
-    // Simulate app initialization (e.g., checking auth, socket connection)
     const initializeApp = async () => {
       try {
-        // Add any initialization logic here (e.g., AsyncStorage, API checks)
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate 2s delay
+        await new Promise(resolve => setTimeout(resolve, 2000)); 
         setIsAppReady(true);
       } catch (error) {
         console.error('App initialization error:', error);
-        setIsAppReady(true); // Proceed even if error to avoid stuck splash
+        setIsAppReady(true);
       }
     };
     initializeApp();
