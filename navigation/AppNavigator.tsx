@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { View, ActivityIndicator, Text, TouchableOpacity, Alert } from 'react-native';
 import HomePage from '../components/Hero';
 import Login from '../components/auth/Login';
 import Register from '../components/auth/Register';
@@ -31,20 +31,32 @@ const LoggedInStackNavigator = createStackNavigator();
 const TabNavigator = createBottomTabNavigator();
 
 const Header: React.FC<{ isLoggedIn: boolean; navigation?: any }> = ({ isLoggedIn, navigation }) => {
+  const { signOut } = useAuth();
+
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Are you sure?', [
+      { text: 'Cancel' },
+      { text: 'Yes', onPress: signOut },
+    ]);
+  };
+
   return (
     <View className="flex-row items-center justify-between p-4 bg-[#1a002f] border-b border-gray-800">
-      {/* Left - App Name */}
       <Text className="text-white text-2xl font-bold">Aether</Text>
-
-      {/* Right - Notifications Icon if logged in */}
       {isLoggedIn && (
-        <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
-          <Ionicons name="notifications-outline" size={28} color="white" />
-        </TouchableOpacity>
+        <View className="flex-row space-x-4">
+          <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
+            <Ionicons className='mr-20' name="notifications-outline" size={28} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleLogout}>
+            <Ionicons name="log-out-outline" size={28} color="white" />
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );
 };
+
 const DashboardTabs = () => {
   return (
     <TabNavigator.Navigator
@@ -68,7 +80,7 @@ const DashboardTabs = () => {
         component={Posts}
         options={{
           tabBarLabel: 'Posts',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Ionicons name="document-text-outline" size={24} color={color} />
           ),
         }}
@@ -78,7 +90,7 @@ const DashboardTabs = () => {
         component={People}
         options={{
           tabBarLabel: 'People',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Ionicons name="people-outline" size={24} color={color} />
           ),
         }}
@@ -88,7 +100,7 @@ const DashboardTabs = () => {
         component={Chats}
         options={{
           tabBarLabel: 'Chats',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Ionicons name="chatbubble-ellipses-outline" size={24} color={color} />
           ),
         }}
@@ -98,7 +110,7 @@ const DashboardTabs = () => {
         component={Profile}
         options={{
           tabBarLabel: 'Profile',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Ionicons name="person-outline" size={24} color={color} />
           ),
         }}
@@ -122,7 +134,6 @@ const AuthStack = () => {
   );
 };
 
-
 const LoggedInStack = () => {
   const { state } = useAuth();
   return (
@@ -133,8 +144,7 @@ const LoggedInStack = () => {
     >
       <LoggedInStackNavigator.Screen name="DashboardTabs" component={DashboardTabs} />
       <LoggedInStackNavigator.Screen name="ChatWindow" component={ChatWindow} />
-      <LoggedInStackNavigator.Screen name="Notifications" component={Notifications}
-      />
+      <LoggedInStackNavigator.Screen name="Notifications" component={Notifications} />
     </LoggedInStackNavigator.Navigator>
   );
 };

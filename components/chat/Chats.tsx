@@ -13,8 +13,9 @@ type RootStackParamList = {
 
 type User = {
   _id: string;
-  name: string;
+  name: string; // Align with backend's 'name' field
   profile_image?: string;
+  username?: string; // Optional, as backend may not provide
 };
 
 type ChatRoom = {
@@ -35,7 +36,6 @@ const Chats: React.FC = () => {
   const [currentUserId, setCurrentUserId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Generates dynamic background color for avatars based on name
   const getAvatarColor = (name: string) => {
     const colors = [
       'bg-blue-500',
@@ -78,11 +78,13 @@ const Chats: React.FC = () => {
             _id: room.user1_id?._id || 'unknown1',
             name: room.user1_id?.name || `User ${room.user1_id?._id?.slice(-4) || '1'}`,
             profile_image: room.user1_id?.profile_image ? `${room.user1_id.profile_image}?t=${Date.now()}` : undefined,
+            username: room.user1_id?.username,
           },
           user2_id: {
             _id: room.user2_id?._id || 'unknown2',
             name: room.user2_id?.name || `User ${room.user2_id?._id?.slice(-4) || '2'}`,
             profile_image: room.user2_id?.profile_image ? `${room.user2_id.profile_image}?t=${Date.now()}` : undefined,
+            username: room.user2_id?.username,
           },
           lastMessage: room.lastMessage || 'No messages yet',
           unreadCount: room.unreadCount || 0,
@@ -113,7 +115,6 @@ const Chats: React.FC = () => {
     if (!socket) return;
 
     const handleNewMessage = (message: { roomId: string; content: string; sender_id: string; name?: string; profile_image?: string }) => {
-      console.log('Received newMessage:', message); // Debug log
       setChatRooms((prev) => {
         const existingRoomIndex = prev.findIndex((room) => room._id === message.roomId);
         const isCurrentUser = message.sender_id === currentUserId;
@@ -134,6 +135,7 @@ const Chats: React.FC = () => {
               _id: message.sender_id,
               name: message.name || `User ${message.sender_id.slice(-4)}`,
               profile_image: message.profile_image ? `${message.profile_image}?t=${Date.now()}` : undefined,
+              username: undefined,
             },
             lastMessage: message.content || 'Media',
             unreadCount: isCurrentUser ? 0 : 1,
